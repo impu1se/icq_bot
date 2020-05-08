@@ -75,7 +75,7 @@ func (l *System) MakeGif(chatId string, dest string) error {
 			continue
 		}
 
-		img = ScaleImage(0.4, img)
+		img = ScaleImage(0.6, img) // TODO: make from env or db
 
 		buf := bytes.Buffer{}
 		if err := gif.Encode(&buf, img, nil); err != nil {

@@ -1,9 +1,10 @@
 package gif_bot
 
 const (
-	clearTimes = "Очистить время начала и конца"
-	newGif     = "Gif из нового видео"
-	oldGif     = "Gif из того же видео"
+	clearTimes    = "Очистить время начала и конца"
+	commandNewGif = "/newgif"
+	newGif        = "Gif из нового видео"
+	oldGif        = "Gif из того же видео"
 )
 
 //var Clear = tgbotapi.NewReplyKeyboard(

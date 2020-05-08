@@ -76,9 +76,6 @@ func (bot *GifBot) NewMessage(chatId, message string, button *tgbotapi.ButtonRes
 		return err
 	}
 	msg := bot.api.NewTextMessage(chatId, text)
-	//if button != nil {
-	//	msg.ReplyMarkup = button
-	//}
 	if err := msg.Send(); err != nil {
 		return err
 	}

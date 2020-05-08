@@ -13,7 +13,7 @@ import (
 
 func (bot *GifBot) handlerMessages(update *tgbotapi.Event) {
 	switch update.Payload.Text {
-	case newGif, clearTimes, oldGif:
+	case commandNewGif:
 		bot.handleNewGif(update)
 	case "/start":
 		bot.handleStart(update)
