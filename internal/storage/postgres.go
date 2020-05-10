@@ -38,7 +38,9 @@ func NewDb(config *configs.Config) (*Database, error) {
 }
 
 func (db *Database) CreateUser(ctx context.Context, user *User) error {
-	_, err := db.connect.Exec(ctx, "insert into users (chat_id, user_name) values ($1, $2) on conflict do nothing", user.ChatId, "")
+	_, err := db.connect.Exec(ctx,
+		"insert into users (chat_id, user_name) values ($1, $2) on conflict (chat_id) do update set user_name = $2",
+		user.ChatId, user.UserName)
 	if err != nil {
 		return err
 	}
@@ -94,4 +96,14 @@ func (db *Database) UpdateLastVideo(ctx context.Context, chatId, lastVideo strin
 		return err
 	}
 	return nil
+}
+
+func (db *Database) GetScale(ctx context.Context) (float64, error) {
+	var scale float64
+	err := db.connect.QueryRow(ctx, `select scale from settings`).
+		Scan(&scale)
+	if err != nil {
+		return 0, err
+	}
+	return scale, nil
 }

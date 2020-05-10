@@ -1,8 +1,9 @@
 package gif_bot
 
 const (
-	clearTimes    = "Очистить время начала и конца"
+	clearTimes    = "/cleartime"
 	commandNewGif = "/newgif"
 	start         = "/start"
-	oldGif        = "Gif из того же видео"
+	oldGif        = "/else"
+	help          = "/help"
 )

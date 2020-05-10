@@ -52,7 +52,7 @@ func (l *System) Download(filepath, url string) error {
 	return nil
 }
 
-func (l *System) MakeGif(chatId string, dest string) error {
+func (l *System) MakeGif(chatId string, dest string, scale float64) error {
 
 	path := fmt.Sprintf(dataDir+"%v/*.jpg", chatId)
 
@@ -75,7 +75,7 @@ func (l *System) MakeGif(chatId string, dest string) error {
 			continue
 		}
 
-		img = ScaleImage(0.6, img) // TODO: make from env or db
+		img = ScaleImage(scale, img)
 
 		buf := bytes.Buffer{}
 		if err := gif.Encode(&buf, img, nil); err != nil {
@@ -152,10 +152,10 @@ func (l *System) MakeImagesFromMovie(user *User) error {
 		return err
 	}
 
-	mplayer := exec.Command("/usr/bin/mplayer", "-vo",
+	mplayer := exec.Command("mplayer", "-vo", // TODO: BEFORE RELEASE TO KNOW PATH MPLAYER
 		fmt.Sprintf("jpeg:outdir=%v/%v%v:quality=100", pwd, dataDir, user.ChatId),
 		"-nosound", "-ss", fmt.Sprint(*user.StartTime), "-endpos", fmt.Sprint(*user.EndTime),
-		fmt.Sprintf(dataDir+"%v/%v.mov", user.ChatId, user.LastVideo))
+		fmt.Sprintf(dataDir+"%v/%v", user.ChatId, user.LastVideo))
 	mplayer.Stderr = os.Stderr
 	mplayer.Stdout = os.Stdout
 	return mplayer.Run()

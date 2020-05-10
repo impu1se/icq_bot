@@ -13,10 +13,12 @@ import (
 
 func (bot *GifBot) handlerMessages(update *tgbotapi.Event) {
 	switch update.Payload.Text {
-	case commandNewGif:
+	case commandNewGif, clearTimes, oldGif:
 		bot.handleNewGif(update)
 	case start:
 		bot.handleStart(update)
+	case help:
+		return
 	default:
 		bot.handleTimes(update)
 	}
@@ -56,12 +58,12 @@ func (bot *GifBot) handlerVideo(update *tgbotapi.Event) {
 		}
 	}
 
-	err = bot.system.Download(fmt.Sprintf("%v/%v.mov", chatId, video.ID), video.URL)
+	err = bot.system.Download(fmt.Sprintf("%v/%v", chatId, video.Name), video.URL)
 	if err != nil {
 		bot.logger.Error(fmt.Sprintf("can't download video, reason %v", err))
 		return
 	}
-	if err := bot.db.UpdateLastVideo(bot.ctx, chatId, video.ID); err != nil {
+	if err := bot.db.UpdateLastVideo(bot.ctx, chatId, video.Name); err != nil {
 		bot.logger.Error(fmt.Sprintf("can't update last video, reason %v", err))
 		return
 	}
@@ -76,9 +78,14 @@ func (bot *GifBot) handlerVideo(update *tgbotapi.Event) {
 }
 
 func (bot *GifBot) handleStart(update *tgbotapi.Event) {
+	chatInfo, err := bot.api.GetChatInfo(update.Payload.Chat.ID)
+	if err != nil {
+		bot.logger.Error("can't get chat info :", zap.Field{String: err.Error()})
+		return
+	}
 	user := &storage.User{
 		ChatId:   update.Payload.Chat.ID,
-		UserName: update.Payload.Chat.Nick,
+		UserName: chatInfo.FirstName,
 	}
 
 	if err := bot.db.CreateUser(bot.ctx, user); err != nil {
@@ -90,7 +97,7 @@ func (bot *GifBot) handleStart(update *tgbotapi.Event) {
 		bot.logger.Error(fmt.Sprintf("can't create new dir for user with chat %v, reason %v", user.UserName, err))
 	}
 
-	if err := bot.NewMessage(user.ChatId, update.Payload.Text, nil); err != nil {
+	if err := bot.NewMessage(user.ChatId, update.Payload.Text, []interface{}{user.UserName}); err != nil {
 		bot.logger.Error(fmt.Sprintf("can't send message, reason: %v", err))
 		return
 	}
@@ -165,8 +172,13 @@ func (bot *GifBot) handleTimes(update *tgbotapi.Event) {
 			return
 		}
 
+		scale, err := bot.db.GetScale(bot.ctx)
+		if err != nil {
+			bot.logger.Error(fmt.Sprintf("can't get scale from db, reason: %v", err))
+			scale = 0.5
+		}
 		gifPath := fmt.Sprintf("%v/%v.gif", chatId, user.LastVideo)
-		err = bot.system.MakeGif(chatId, gifPath)
+		err = bot.system.MakeGif(chatId, gifPath, scale)
 		if err != nil {
 			bot.logger.Error(fmt.Sprintf("can't make gif from movie, reason: %v", err))
 			return

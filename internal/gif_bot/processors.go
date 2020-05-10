@@ -15,7 +15,7 @@ import (
 type System interface {
 	Download(filepath, url string) error
 	CreateNewDir(chatId string) error
-	MakeGif(chatId string, dest string) error
+	MakeGif(chatId string, dest string, scale float64) error
 	MakeImagesFromMovie(user *storage.User) error
 	ClearDir(pattern string) error
 }
@@ -65,7 +65,7 @@ func (bot *GifBot) Run() {
 	}
 }
 
-func (bot *GifBot) NewMessage(chatId, message string, button *tgbotapi.ButtonResponse) error {
+func (bot *GifBot) NewMessage(chatId, message string, params []interface{}) error {
 
 	if message == "" {
 		return nil
@@ -74,6 +74,10 @@ func (bot *GifBot) NewMessage(chatId, message string, button *tgbotapi.ButtonRes
 	if err != nil {
 		bot.logger.Error(fmt.Sprintf("can't get text from db for message: %v", message))
 		return err
+	}
+
+	if params != nil && len(params) > 0 {
+		text = fmt.Sprintf(text, params...)
 	}
 	msg := bot.api.NewTextMessage(chatId, text)
 	if err := msg.Send(); err != nil {

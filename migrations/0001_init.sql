@@ -1,6 +1,6 @@
 create table users (
     id bigserial primary key,
-    chat_id bigint not null,
+    chat_id varchar(300) not null,
     last_video varchar(300),
     start_time int,
     end_time int,
@@ -16,8 +16,16 @@ create table messages (
     text varchar
 );
 
-INSERT INTO public.messages ( name, text) VALUES ('/start', 'Привет, я делаю гиф из видео!Продолжительность видео должно быть не более 10 сек');
-INSERT INTO public.messages ( name, text) VALUES ('Очистить время начала и конца', 'Время сбросилось, введите новое время');
+create table settings (
+    scale int
+)
+
+INSERT INTO public.messages ( name, text) VALUES ('/start', 'Привет %s, я делаю гиф из видео!
+Вы можете загрузить любое ваше видео и я сделаю для вас gif.
+К сожалению у меня есть некоторые ограничения:
+1. Продолжительность gif должно быть не больше 10 секунд.
+2. Видео которое вы загружаете должно не превышать 1 минуты.');
+INSERT INTO public.messages ( name, text) VALUES ('/cleartime', 'Время сбросилось, введите новое время');
 INSERT INTO public.messages ( name, text) VALUES ('download error', 'Не получилось загрузить видео, попробуйте позднее');
 INSERT INTO public.messages ( name, text) VALUES ('save video', 'Пожалуйста подождите, сохраняю видео...');
 INSERT INTO public.messages ( name, text) VALUES ('successful download', 'Видео успешно загружено, укажите с какой секунды начать делать gif');
@@ -32,6 +40,6 @@ INSERT INTO public.messages ( name, text) VALUES ('start create video', 'Обр�
 INSERT INTO public.messages ( name, text) VALUES ('loading gif', 'Создание gif завершено
 Загружаем gif в чат...
 ');
-INSERT INTO public.messages ( name, text) VALUES ('Gif из нового видео', 'Отправьте любое видео, выберите время и я сделаю для вас gif');
-INSERT INTO public.messages ( name, text) VALUES ('Gif из того же видео', 'Введите новое время ');
+INSERT INTO public.messages ( name, text) VALUES ('/newgif', 'Отправьте любое видео, выберите время и я сделаю для вас gif');
+INSERT INTO public.messages ( name, text) VALUES ('/else', 'Видео останеться то же , просто введите новое время');
 INSERT INTO public.messages ( name, text) VALUES ('not video', 'Кажется это не видео.');
