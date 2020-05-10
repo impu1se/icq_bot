@@ -16,7 +16,7 @@ create table messages (
     text varchar
 );
 
-INSERT INTO public.messages ( name, text) VALUES ('start', 'Привет, я делаю гиф из видео!Продолжительность видео должно быть не более 10 сек');
+INSERT INTO public.messages ( name, text) VALUES ('/start', 'Привет, я делаю гиф из видео!Продолжительность видео должно быть не более 10 сек');
 INSERT INTO public.messages ( name, text) VALUES ('Очистить время начала и конца', 'Время сбросилось, введите новое время');
 INSERT INTO public.messages ( name, text) VALUES ('download error', 'Не получилось загрузить видео, попробуйте позднее');
 INSERT INTO public.messages ( name, text) VALUES ('save video', 'Пожалуйста подождите, сохраняю видео...');
@@ -34,3 +34,4 @@ INSERT INTO public.messages ( name, text) VALUES ('loading gif', 'Создани
 ');
 INSERT INTO public.messages ( name, text) VALUES ('Gif из нового видео', 'Отправьте любое видео, выберите время и я сделаю для вас gif');
 INSERT INTO public.messages ( name, text) VALUES ('Gif из того же видео', 'Введите новое время ');
+INSERT INTO public.messages ( name, text) VALUES ('not video', 'Кажется это не видео.');

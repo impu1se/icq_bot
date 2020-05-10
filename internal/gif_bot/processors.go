@@ -53,7 +53,7 @@ func NewGifBot(
 func (bot *GifBot) Run() {
 	for update := range bot.Updates {
 
-		if update.Payload.Message().File != nil {
+		if len(update.Payload.Parts) > 0 {
 			bot.handlerVideo(&update)
 			continue
 		}

@@ -15,7 +15,7 @@ func (bot *GifBot) handlerMessages(update *tgbotapi.Event) {
 	switch update.Payload.Text {
 	case commandNewGif:
 		bot.handleNewGif(update)
-	case "/start":
+	case start:
 		bot.handleStart(update)
 	default:
 		bot.handleTimes(update)
@@ -25,12 +25,25 @@ func (bot *GifBot) handlerMessages(update *tgbotapi.Event) {
 func (bot *GifBot) handlerVideo(update *tgbotapi.Event) {
 	chatId := update.Payload.Chat.ID
 
+	var fileId string
+	for _, part := range update.Payload.Parts {
+		if part.Type == "file" && part.Payload.Type == "video" {
+			fileId = part.Payload.FileID
+		}
+	}
+	if fileId == "" {
+		if err := bot.NewMessage(chatId, "not video", nil); err != nil {
+			bot.logger.Error(fmt.Sprintf("can't send message, reason: %v", err))
+		}
+		return
+	}
+
 	if err := bot.system.ClearDir(fmt.Sprintf("%v/*.mov", chatId)); err != nil {
 		bot.logger.Error("can't clear dir for new video")
 		return
 	}
 
-	video, err := bot.api.GetFileInfo(update.Payload.Message().FileID) // TODO: make check file size
+	video, err := bot.api.GetFileInfo(fileId) // TODO: make check file size
 	if err != nil {
 		bot.logger.Error(fmt.Sprintf("can't get file from chat id: %v, reason: %v", chatId, err))
 		if err := bot.NewMessage(chatId, "download error", nil); err != nil {
