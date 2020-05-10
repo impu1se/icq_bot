@@ -28,7 +28,7 @@ services:
     env_file: '.env'
     depends_on:
       - db
-    networks: # Networks to join (Services on the same network can communicate with each other using their name)
+    networks:
       - backend
 
 networks:

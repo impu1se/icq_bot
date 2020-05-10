@@ -12,8 +12,6 @@ type Config struct {
 	ApiToken string `required:"true"`
 	Debug    bool   `default:"true"`
 	Dsn      string `default:"localhost"`
-	CertFile string `required:"true"`
-	KeyFile  string `required:"true"`
 }
 
 func NewConfig() *Config {
