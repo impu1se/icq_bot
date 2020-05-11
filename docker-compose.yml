@@ -22,9 +22,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "80:80"
-      - "443:443"
     env_file: '.env'
     depends_on:
       - db

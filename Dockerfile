@@ -1,6 +1,6 @@
 FROM golang:1.13
 
-RUN apt-get update && apt-get install mplayer
+RUN apt-get update && apt-get install mplayer -y
 
 RUN mkdir /movie_to_gif_bot
 ADD . /movie_to_gif_bot/
