@@ -54,12 +54,12 @@ func (bot *GifBot) Run() {
 	for update := range bot.Updates {
 
 		if len(update.Payload.Parts) > 0 {
-			bot.handlerVideo(&update)
+			go bot.handlerVideo(&update)
 			continue
 		}
 
 		if update.Payload.Message() != nil {
-			bot.handlerMessages(&update)
+			go bot.handlerMessages(&update)
 			continue
 		}
 	}
