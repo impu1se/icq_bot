@@ -4,6 +4,6 @@ const (
 	clearTimes    = "/cleartime"
 	commandNewGif = "/newgif"
 	start         = "/start"
-	oldGif        = "/else"
+	oldGif        = "/repeat"
 	help          = "/help"
 )
