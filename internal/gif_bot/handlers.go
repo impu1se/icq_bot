@@ -3,6 +3,7 @@ package gif_bot
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 	"strconv"
 
 	"go.uber.org/zap"
@@ -12,6 +13,15 @@ import (
 )
 
 func (bot *GifBot) handlerMessages(update *tgbotapi.Event) {
+	defer func() {
+		if r := recover(); r != nil {
+			if er, ok := r.(error); ok {
+				fmt.Println(fmt.Sprintf("error: %v", er.Error()))
+			}
+			fmt.Println(fmt.Sprintf("stack_trace %v", debug.Stack()))
+		}
+	}()
+
 	switch update.Payload.Text {
 	case commandNewGif, clearTimes, oldGif:
 		bot.handleNewGif(update)
@@ -25,6 +35,16 @@ func (bot *GifBot) handlerMessages(update *tgbotapi.Event) {
 }
 
 func (bot *GifBot) handlerVideo(update *tgbotapi.Event) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			if er, ok := r.(error); ok {
+				fmt.Println(fmt.Sprintf("error: %v", er.Error()))
+			}
+			fmt.Println(fmt.Sprintf("stack_trace %v", debug.Stack()))
+		}
+	}()
+
 	chatId := update.Payload.Chat.ID
 
 	var fileId string
@@ -40,7 +60,7 @@ func (bot *GifBot) handlerVideo(update *tgbotapi.Event) {
 		return
 	}
 
-	if err := bot.system.ClearDir(fmt.Sprintf("%v/*.mov", chatId)); err != nil {
+	if err := bot.system.ClearDir(chatId); err != nil {
 		bot.logger.Error("can't clear dir for new video")
 		_ = bot.NewMessage(chatId, "error", nil)
 		return

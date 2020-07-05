@@ -2,6 +2,7 @@ package storage
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"image"
 	"image/gif"
@@ -62,7 +63,7 @@ func (l *System) MakeGif(chatId string, dest string, scale float64) error {
 		return err
 	}
 	if len(srcfilenames) == 0 {
-		log.Fatalf("No source images found via pattern %s", path)
+		return errors.New(fmt.Sprintf("No source images found via pattern %s", path))
 	}
 	sort.Strings(srcfilenames)
 
@@ -120,8 +121,14 @@ func ScaleImage(scale float64, img image.Image) image.Image {
 
 }
 
-func (l *System) ClearDir(pattern string) error {
-	files, err := filepath.Glob(dataDir + pattern)
+func (l *System) ClearDir(chatId string) error {
+
+	err := l.CreateNewDir(chatId)
+	if err != nil {
+		l.logger.Error("cant create dir from clear dir function")
+	}
+
+	files, err := filepath.Glob(dataDir + fmt.Sprintf("%v/*.mov", chatId))
 	if err != nil {
 		return err
 	}
@@ -140,10 +147,8 @@ func (l *System) CreateNewDir(chatId string) error {
 
 func (l *System) MakeImagesFromMovie(user *User) error {
 
-	path := fmt.Sprintf("%v/*.jpg", user.ChatId)
-
-	if err := l.ClearDir(path); err != nil {
-		l.logger.Error(fmt.Sprintf("can't clear dir %v , err: %v", path, err))
+	if err := l.ClearDir(user.ChatId); err != nil {
+		l.logger.Error(fmt.Sprintf("can't clear dir %v , err: %v", user.ChatId, err))
 		return err
 	}
 
